@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { FcSearch } from 'react-icons/Fc';
-import { TiShoppingCart } from 'react-icons/Ti';
+import { FcSearch } from 'react-icons/fc';
+import { TiShoppingCart } from 'react-icons/ti';
 import { Product } from "@/types/types";
 
 interface SearchBarProps {

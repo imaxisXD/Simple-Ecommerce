@@ -8,8 +8,6 @@ export default function ProductDetails({ product }: { product: Product }) {
                 <Image
                     src={product.image}
                     alt={product.title}
-                    layout="fill"
-                    objectFit="contain"
                 />
             </div>
             <div className="w-full max-w-2xl mt-8 bg-white rounded-2xl shadow-lg p-8 backdrop-blur-lg backdrop-filter bg-opacity-70">
