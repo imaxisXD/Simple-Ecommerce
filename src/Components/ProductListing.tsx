@@ -8,13 +8,13 @@ interface ProductListingProps {
     products: Product[];
     categoriesList: String[];
     searchProducts: Product[];
+    onAddToCart: (product: Product) => void;
+    onRemoveFromCart: (product: Product) => void;
 }
 
-export default function ProductListing({ products, categoriesList, searchProducts }: ProductListingProps) {
+export default function ProductListing({ products, categoriesList, searchProducts, onAddToCart, onRemoveFromCart }: ProductListingProps) {
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [category, setCategory] = useState<String>("");
-    const [cart, setCart] = useState<{ [key: string]: number }>({});
-
 
     function handleFilters(event: React.MouseEvent<HTMLButtonElement>) {
         const categoryFilter = event.currentTarget.dataset.category as string;
@@ -22,7 +22,7 @@ export default function ProductListing({ products, categoriesList, searchProduct
     }
     useEffect(() => {
         if (searchProducts) {
-            console.log(searchProducts);
+
             setFilteredProducts(searchProducts);
         }
     }, [searchProducts]);
@@ -39,39 +39,17 @@ export default function ProductListing({ products, categoriesList, searchProduct
     }, [category, products]);
 
     function handleBuy(product: Product) {
+        product.quantity++;
+        onAddToCart(product);
+    }
 
-    }
-    function handleAddToCart(product: Product) {
-        const existingCartItemQuantity = cart[product.id];
-        if (existingCartItemQuantity) {
-            // If the item already exists in the cart, increase its quantity by 1
-            const updatedCart = { ...cart };
-            updatedCart[product.id] = existingCartItemQuantity + 1;
-            setCart(updatedCart);
-        } else {
-            // If the item does not exist in the cart, add it with a quantity of 1
-            const updatedCart = { ...cart, [product.id]: 1 };
-            setCart(updatedCart);
-        }
-    }
     function handleRemoveFromCart(product: Product) {
-        const existingCartItemQuantity = cart[product.id];
-
-        if (existingCartItemQuantity) {
-            // If the item exists in the cart, decrease its quantity by 1
-            const updatedCart = { ...cart };
-            updatedCart[product.id] = existingCartItemQuantity - 1;
-
-            // If the quantity becomes 0, remove the item from the cart
-            if (updatedCart[product.id] === 0) {
-                delete updatedCart[product.id];
-            }
-
-            setCart(updatedCart);
+        if (product.quantity > 0) {
+            product.quantity--;
+            onRemoveFromCart(product);
         }
-
-
     }
+
     return (
 
         <div className="flex flex-col items-center justify-center min-h-screen py-12 bg-gradient-to-b from-purple-400 via-pink-500 to-red-500">
@@ -85,7 +63,7 @@ export default function ProductListing({ products, categoriesList, searchProduct
                 ))}
 
             </div>
-            <div className="grid grid-cols-1 gap-4 mt-8 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 mt-8 ml-2 mr-2 sm:grid-cols-2 lg:grid-cols-3">
                 {filteredProducts.map((product) => (
                     <div
                         key={product.id}
@@ -97,7 +75,6 @@ export default function ProductListing({ products, categoriesList, searchProduct
                                 alt={product.title}
                                 height={500}
                                 width={500}
-
                             />
                         </div>
                         <div className="p-4">
@@ -116,25 +93,38 @@ export default function ProductListing({ products, categoriesList, searchProduct
                             </p>
                             <div className="flex items-center justify-between mt-4">
                                 <button
-                                    className="inline-block px-4 py-2 text-lg font-bold text-white bg-purple-600 rounded-full shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                                    className="inline-block px-4 py-2 text-lg font-bold text-white bg-purple-600 rounded-full shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 transition-all duration-200 ease-in-out transform hover:-translate-y-1 hover:scale-110"
                                     onClick={() => handleBuy(product)}
                                 >
                                     Buy Now
                                 </button>
-                                <div className="ml-4 text-md font-semibold text-gray-800">
-                                    <button onClick={() => handleAddToCart(product)}>+</button>
-                                    {cart[product.id] ? cart[product.id] : 0}
-                                    <button onClick={() => handleRemoveFromCart(product)}>-</button>
 
+                                <div className="ml-4 text-md font-semibold text-gray-800 flex items-center space-x-2">
+                                    <button
+                                        className="px-2 py-1 text-lg font-bold text-white bg-purple-600 rounded-full shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 transition-all duration-200 ease-in-out transform hover:-translate-y-1 hover:scale-110"
+                                        onClick={() => handleBuy(product)}
+                                    >
+                                        +
+                                    </button>
+                                    <p className="text-lg">{product.quantity ? product.quantity : 0}</p>
+                                    {product.quantity > 0 && (
+                                        <button
+                                            className="px-2 py-1 text-lg font-bold text-white bg-red-500 rounded-full shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200 ease-in-out transform hover:-translate-y-1 hover:scale-110"
+                                            onClick={() => handleRemoveFromCart(product)}
+                                        >
+                                            -
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                             <Link
                                 className="inline-block px-4 py-2 mt-4 text-lg font-bold text-white bg-purple-600 rounded-full shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600"
                                 href={`/product-details`}
                             >
-                                DEtails
+                                Details
                                 {/* <ProductDetails product={product} /> */}
                             </Link>
+
                         </div>
                     </div>
                 ))}

@@ -7,12 +7,12 @@ import { Product } from "@/types/types";
 interface SearchBarProps {
     products: Product[];
     onSearch: (searchText: string) => void;
+    cartCount: number;
 }
 
-export default function SearchBar({ products, onSearch }: SearchBarProps) {
+export default function SearchBar({ products, onSearch, cartCount }: SearchBarProps) {
     const [searchTerm, setSearchTerm] = useState("");
     const [searchResults, setSearchResults] = useState<Product[]>([]);
-    const [cartItems, setCartItems] = useState<Product[]>([]);
     const [showResults, setShowResults] = useState(false);
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,11 +39,6 @@ export default function SearchBar({ products, onSearch }: SearchBarProps) {
     const handleFocusOut = () => {
         setShowResults(false);
     }
-
-    const cartItemsCount = cartItems.reduce(
-        (acc, item) => acc + item.quantity,
-        0
-    );
 
     useEffect(() => {
         let timer: NodeJS.Timeout;
@@ -100,7 +95,7 @@ export default function SearchBar({ products, onSearch }: SearchBarProps) {
                 href="/cart"
             >
                 <TiShoppingCart className="h-6 w-6" />
-                <span className="font-medium">{cartItemsCount}</span>
+                <span className="font-medium">{cartCount}</span>
             </Link>
         </div>
     )
